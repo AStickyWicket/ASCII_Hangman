@@ -1,0 +1,23 @@
+{
+  "LevelOne": [
+    "Java",
+    "College",
+    "Wire",
+    "Monitor",
+    "Controller"
+  ],
+  "LevelTwo": [
+    "Quick brown fox",
+    "The maid in Spain",
+    "It's raining cats and dogs",
+    "Let the cat out of the bag",
+    "Easy does it"
+  ],
+  "LevelThree": [
+    "A bird in the hand is worth two in the bush",
+    "It ain't over till the large lady sings",
+    "A few sandwiches short of a picnic",
+    "Xanthippe",
+    "Pneumonia"
+  ]
+}

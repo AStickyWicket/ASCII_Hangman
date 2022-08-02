@@ -1,5 +1,5 @@
-public class Main {
+public class LaunchHangman {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        InitGame initGame = new InitGame("easy");
     }
 }
