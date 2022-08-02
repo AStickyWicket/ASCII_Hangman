@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InitGame {
-    private String level;
-    private String phrase;
+    private String level, phrase;
     List<String> levelOne = new ArrayList<>();
     List<String> levelTwo = new ArrayList<>();
     List<String> levelThree = new ArrayList<>();
@@ -31,8 +30,7 @@ public class InitGame {
         this.phrase = phrase;
     }
 
-    public InitGame(String level) {
-        this.level = level;
+    public InitGame() {
         genPhraseArray();
     }
 
