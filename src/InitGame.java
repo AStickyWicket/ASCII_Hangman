@@ -3,6 +3,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -11,10 +12,16 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class InitGame {
-    private String level, phrase;
-    List<String> levelOne = new ArrayList<>();
-    List<String> levelTwo = new ArrayList<>();
-    List<String> levelThree = new ArrayList<>();
+    private String level, phrase, userGuesses;
+    private int lives;
+    private List<String> levelOne = new ArrayList<>();
+    private List<String> levelTwo = new ArrayList<>();
+    private List<String> levelThree = new ArrayList<>();
+
+    private final String[] HANGMANSTAGES = new String[7];
+    private ArrayList<Character> guessedLetters = new ArrayList<>();
+    private boolean winFlag = false;
+
 
     public String getLevel() {
         return level;
@@ -28,28 +35,38 @@ public class InitGame {
         Random random = new Random();
         if (level.equals("easy")){
             phrase = levelOne.get(random.nextInt(levelOne.size()));
+            userGuesses = phrase.replaceAll("[a-zA-Z]", "_");
             levelOne.remove(phrase);
         } else if (level.equals("medium")) {
             phrase = levelTwo.get(random.nextInt(levelTwo.size()));
+            userGuesses = phrase.replaceAll("[a-zA-Z]", "_");
             levelTwo.remove(phrase);
         } else {
             phrase = levelThree.get(random.nextInt(levelThree.size()));
+            userGuesses = phrase.replaceAll("[a-zA-Z]", "_");
             levelThree.remove(phrase);
         }
 
     }
 
     public InitGame() {
-        genPhraseArray();
+        loadAllArrays();
         setLevel();
         setPhrase();
-        System.out.println("Debugging: " + level + " " + phrase
-                + "\n" + levelOne.size() + " " + levelTwo.size() + " " + levelThree.size()); // Verify item got removed
+        lives = 6;
+        printHangman();
+        do {
+            guessLetter();
+        } while (lives !=0 && !winFlag);
+
     }
 
-    private void genPhraseArray() {
+    private void loadAllArrays() {
         try {
             File phraseList = new File("phraseList.json");
+            File hangmanStages = new File("hangmanStages.txt");
+            BufferedReader br = new BufferedReader(new FileReader(hangmanStages));
+
             JsonElement fileElement = JsonParser.parseReader(new FileReader(phraseList));
             JsonObject fileObject = fileElement.getAsJsonObject();
 
@@ -60,6 +77,26 @@ public class InitGame {
             levelOneJson.forEach( phrase -> levelOne.add(phrase.getAsString()));
             levelTwoJson.forEach( phrase -> levelTwo.add(phrase.getAsString()));
             levelThreeJson.forEach( phrase -> levelThree.add(phrase.getAsString()));
+
+            int counter = 6;
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while(line != null) {
+                if (line.contains(",")){
+                    line = line.replaceAll(",", "");
+                    sb.append(line);
+                    sb.append("\n");
+                    HANGMANSTAGES[counter] = sb.toString();
+                    counter--;
+                    sb.setLength(0);
+                }else{
+                    sb.append(line);
+                    sb.append("\n");
+                }
+                line = br.readLine();
+            }
+            br.close();
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -93,6 +130,48 @@ public class InitGame {
             }
         }
         this.level = chosenLevel;
+    }
+
+    public void guessLetter(){
+        Scanner input = new Scanner(System.in);
+
+
+        while (true) {
+            String guess = input.next();
+            guess = guess.toLowerCase();
+
+            if (guess.length() == 1 && guess.matches("[a-z]")) {
+                if (phrase.toLowerCase().contains(guess)) {
+                    for (int i = 0; i < phrase.length(); i++) {
+                        if (phrase.toLowerCase().charAt(i) == guess.charAt(0)) {
+                            userGuesses = userGuesses.substring(0, i) + guess + userGuesses.substring(i + 1);
+                        }
+                    }
+                } else {
+                    lives--;
+                }
+                guessedLetters.add(guess.toUpperCase().charAt(0));
+                printHangman();
+                return;
+            } else {
+                System.out.println("You have entered an invalid letter");
+            }
+        }
+    }
+
+    private void printHangman(){
+        if (lives >= 0) {
+            System.out.println(HANGMANSTAGES[lives] + userGuesses);
+            System.out.println("Guessed letters: " + guessedLetters);
+        }
+        if (lives == 0) {
+            System.out.println("You have lost");
+            System.out.println("The phrase was: " + phrase);
+        }
+        if (userGuesses.equals(phrase.toLowerCase())) {
+            System.out.println("You have won");
+            winFlag = true;
+        }
     }
 
 }
