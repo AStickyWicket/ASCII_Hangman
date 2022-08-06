@@ -14,14 +14,13 @@ import java.util.Scanner;
 public class InitGame {
     private String level, phrase, userGuesses;
     private int lives;
-    private List<String> levelOne = new ArrayList<>();
-    private List<String> levelTwo = new ArrayList<>();
-    private List<String> levelThree = new ArrayList<>();
+    private final List<String> levelOne = new ArrayList<>();
+    private final List<String> levelTwo = new ArrayList<>();
+    private final List<String> levelThree = new ArrayList<>();
 
     private final String[] HANGMANSTAGES = new String[7];
-    private ArrayList<Character> guessedLetters = new ArrayList<>();
+    private final ArrayList<Character> guessedLetters = new ArrayList<>();
     private boolean winFlag = false;
-
 
     public String getLevel() {
         return level;
@@ -51,14 +50,15 @@ public class InitGame {
 
     public InitGame() {
         loadAllArrays();
-        setLevel();
-        setPhrase();
-        lives = 6;
-        printHangman();
-        do {
-            guessLetter();
-        } while (lives !=0 && !winFlag);
-
+        do{
+            setLevel();
+            setPhrase();
+            lives = 6;
+            printHangman();
+            do {
+                guessLetter();
+            } while (lives !=0 && !winFlag);}
+        while (playAgain());
     }
 
     private void loadAllArrays() {
@@ -140,7 +140,10 @@ public class InitGame {
             String guess = input.next();
             guess = guess.toLowerCase();
 
-            if (guess.length() == 1 && guess.matches("[a-z]")) {
+            if (guessedLetters.contains(guess.toUpperCase().charAt(0))) {
+                System.out.println("You have already guessed that letter");
+            }
+            else if (guess.length() == 1 && guess.matches("[a-z]")) {
                 if (phrase.toLowerCase().contains(guess)) {
                     for (int i = 0; i < phrase.length(); i++) {
                         if (phrase.toLowerCase().charAt(i) == guess.charAt(0)) {
@@ -153,7 +156,8 @@ public class InitGame {
                 guessedLetters.add(guess.toUpperCase().charAt(0));
                 printHangman();
                 return;
-            } else {
+            }
+            else {
                 System.out.println("You have entered an invalid letter");
             }
         }
@@ -174,4 +178,24 @@ public class InitGame {
         }
     }
 
+    public boolean playAgain(){
+        Scanner input = new Scanner(System.in);
+        String playAgain;
+        boolean playAgainFlag;
+        while(true) {
+            System.out.println("Would you like to play again? (yes/no)");
+            playAgain = input.next();
+            if (playAgain.startsWith("y")) {
+                playAgainFlag = true;
+                break;
+            } else if (playAgain.startsWith("n")) {
+                System.out.println("Thank you for playing");
+                playAgainFlag = false;
+                break;
+            } else {
+                System.out.println("Not a valid answer, try again!");
+            }
+        }
+    return playAgainFlag;
+    }
 }
