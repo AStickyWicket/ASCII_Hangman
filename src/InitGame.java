@@ -32,6 +32,7 @@ public class InitGame {
 
     public void setPhrase() {
         Random random = new Random();
+        guessedLetters.clear();
         if (level.equals("easy")){
             phrase = levelOne.get(random.nextInt(levelOne.size()));
             userGuesses = phrase.replaceAll("[a-zA-Z]", "_");
@@ -51,6 +52,7 @@ public class InitGame {
     public InitGame() {
         loadAllArrays();
         do{
+            SoundEffects.backgroundSound();
             setLevel();
             setPhrase();
             lives = 6;
@@ -148,10 +150,12 @@ public class InitGame {
                     for (int i = 0; i < phrase.length(); i++) {
                         if (phrase.toLowerCase().charAt(i) == guess.charAt(0)) {
                             userGuesses = userGuesses.substring(0, i) + guess + userGuesses.substring(i + 1);
+                            SoundEffects.goodGuessSound();
                         }
                     }
                 } else {
                     lives--;
+                    SoundEffects.badGuessSound();
                 }
                 guessedLetters.add(guess.toUpperCase().charAt(0));
                 printHangman();
@@ -171,9 +175,11 @@ public class InitGame {
         if (lives == 0) {
             System.out.println("You have lost");
             System.out.println("The phrase was: " + phrase);
+            SoundEffects.gameOverSound();
         }
         if (userGuesses.equals(phrase.toLowerCase())) {
             System.out.println("You have won");
+            SoundEffects.winnerWinnerSound();
             winFlag = true;
         }
     }
@@ -196,6 +202,6 @@ public class InitGame {
                 System.out.println("Not a valid answer, try again!");
             }
         }
-    return playAgainFlag;
+        return playAgainFlag;
     }
 }
